@@ -210,5 +210,38 @@ module.exports = {
         s = s.replace(n,v);
       }
       return s;
+    },
+    showOptionDialog : function(options, opts) {
+      if(typeof opts == 'undefined') opts = {};
+      var items = [];
+      for(var i = 0; i < options.length; i++) {
+        var o = options[i];
+        if(typeof o === 'string') {
+          items.push(o);
+        } else if(o && typeof o.text !== 'undefined') {
+          items.push(o.text);
+        } else {
+          items.push('');
+        }
+      }
+      var menuobj = {
+        items: items,
+        handler: function(title, idx) {
+          var selectedOption = options[idx];
+          var result = title;
+          if(opts && typeof opts.doneResult === 'function') {
+            opts.doneResult(result, selectedOption);
+          }
+        },
+        finished: function(cancelled) {
+          if(cancelled && opts && typeof opts.doneResult === 'function') {
+            opts.doneResult('cancel', null);
+          }
+        }
+      };
+      if(opts.message) {
+        menuobj.title = opts.message;
+      }
+      $ui.menu(menuobj);
     }
 };
